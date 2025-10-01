@@ -36,6 +36,11 @@ in {
   wayland.windowManager.hyprland = {
     enable = true;
     package = pkgs.hyprland;
+    plugins = [
+      pkgs.hyprlandPlugins.xtra-dispatchers
+      pkgs.hyprlandPlugins.hyprsplit
+      pkgs.hyprlandPlugins.hyprspace
+    ];
     systemd = {
       enable = true;
       enableXdgAutostart = true;
