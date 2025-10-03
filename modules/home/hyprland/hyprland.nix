@@ -20,6 +20,7 @@ in {
     ydotool
     hyprpolkitagent
     hyprland-qtutils # needed for banners and ANR messages
+    uwsm # Universal Wayland Session Manager for app launching
   ];
   systemd.user.targets.hyprland-session.Unit.Wants = [
     "xdg-desktop-autostart.target"
@@ -51,16 +52,32 @@ in {
     };
     settings = {
       exec-once = [
-        "wl-paste --type text --watch cliphist store # Stores only text data"
-        "wl-paste --type image --watch cliphist store # Stores only image data"
+        # Clipboard management
+        "wl-paste --type text --watch cliphist store"
+        "wl-paste --type image --watch cliphist store"
+
+        # Environment and session
         "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+
+        # Authentication agent
         "systemctl --user start hyprpolkitagent"
+
+        # System services with uwsm
+        "uwsm app -s s brightnessctl --restore"
+        "uwsm app -s s hypridle"
+
+        # Background services with uwsm
+        "uwsm app -s b fcitx5"
+
+        # GUI applications (non-uwsm managed for now)
         "killall -q swww;sleep .5 && swww init"
         "killall -q waybar;sleep .5 && waybar"
         "killall -q swaync;sleep .5 && swaync"
         "nm-applet --indicator"
         "pypr &"
+
+        # Wallpaper
         "sleep 1.5 && swww img ${stylixImage}"
       ];
 
